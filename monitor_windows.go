@@ -1,6 +1,7 @@
 package tun
 
 import (
+	"net/netip"
 	"sync"
 
 	"github.com/sagernet/sing-tun/internal/winipcfg"
@@ -58,6 +59,17 @@ func (m *networkUpdateMonitor) Close() error {
 	return nil
 }
 
+func (m *defaultInterfaceMonitor) ShouldBypassInterface(destination netip.Addr) bool {
+	// zeroTierFakeGatewayIp from
+	// https://github.com/zerotier/ZeroTierOne/blob/1.8.6/osdep/WindowsEthernetTap.cpp#L994
+	var zeroTierFakeGatewayIp = netip.MustParseAddr("25.255.255.254")
+
+	if destination == zeroTierFakeGatewayIp {
+		return true
+	}
+	return false
+}
+
 func (m *defaultInterfaceMonitor) checkUpdate() error {
 	rows, err := winipcfg.GetIPForwardTable2(windows.AF_INET)
 	if err != nil {
@@ -70,6 +82,10 @@ func (m *defaultInterfaceMonitor) checkUpdate() error {
 
 	for _, row := range rows {
 		if row.DestinationPrefix.PrefixLength != 0 {
+			continue
+		}
+
+		if m.ShouldBypassInterface(row.NextHop.Addr()) {
 			continue
 		}
 

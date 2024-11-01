@@ -105,6 +105,10 @@ func (m *networkUpdateMonitor) Close() error {
 	return nil
 }
 
+func (m *defaultInterfaceMonitor) ShouldBypassInterface(destination netip.Addr) bool {
+	return false
+}
+
 func (m *defaultInterfaceMonitor) checkUpdate() error {
 	var (
 		defaultInterface *net.Interface

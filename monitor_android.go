@@ -3,7 +3,12 @@ package tun
 import (
 	"github.com/sagernet/netlink"
 	E "github.com/sagernet/sing/common/exceptions"
+	"net/netip"
 )
+
+func (m *defaultInterfaceMonitor) ShouldBypassInterface(destination netip.Addr) bool {
+	return false
+}
 
 func (m *defaultInterfaceMonitor) checkUpdate() error {
 	ruleList, err := netlink.RuleList(netlink.FAMILY_ALL)

@@ -38,6 +38,7 @@ type DefaultInterfaceMonitor interface {
 	AndroidVPNEnabled() bool
 	RegisterCallback(callback DefaultInterfaceUpdateCallback) *list.Element[DefaultInterfaceUpdateCallback]
 	UnregisterCallback(element *list.Element[DefaultInterfaceUpdateCallback])
+	ShouldBypassInterface(destination netip.Addr) bool
 }
 
 type DefaultInterfaceMonitorOptions struct {
